@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // database/migrations/xxxx_xx_xx_create_products_table.php
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->enum('tipe_produk', ['paket', 'satuan']);
@@ -19,9 +18,9 @@ return new class extends Migration
             $table->integer('jumlah_robux');
             $table->decimal('harga', 10, 2);
             $table->boolean('is_active')->default(true);
+            $table->integer('stock')->nullable(); // Tambahan: hanya digunakan oleh produk satuan
             $table->timestamps();
         });
-
     }
 
     /**
