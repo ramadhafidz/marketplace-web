@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
             'jumlah_robux' => 1,
             'harga' => 70.00, // Harga per robux
             'is_active' => true,
-            'stock' => 100000000000, // Stok total robux
+            'stock' => 1000000000000, // Stok total robux
             'created_at' => $now,
             'updated_at' => $now,
         ]);
