@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('jumlah_robux');
             $table->decimal('harga', 10, 2);
             $table->boolean('is_active')->default(true);
-            $table->integer('stock')->nullable(); // Tambahan: hanya digunakan oleh produk satuan
+            $table->bigInteger('stock')->nullable(); // Tambahan: hanya digunakan oleh produk satuan
             $table->timestamps();
         });
     }
