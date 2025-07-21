@@ -18,8 +18,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+    // File: app/Providers/RouteServiceProvider.php
+    
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        
     }
 }

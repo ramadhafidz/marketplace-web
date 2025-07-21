@@ -1,7 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from '@inertiajs/react';
+import axios from "axios";
 
-export default function HomePage() {
+export default function HomePage({ paket = [] }) {
+  const [message, setMessage] = useState("");
+
+  const handleBuyPaket = (paketId) => {
+    axios.post("/api/robux-purchase-paket", {
+      paket_id: paketId,
+      jumlah_paket: 1 // default beli 1 paket
+    })
+    .then(res => {
+      setMessage(res.data.message);
+    })
+    .catch(err => {
+      setMessage(err.response?.data?.message || "Gagal membeli paket");
+    });
+
+    // Sembunyikan pesan setelah 3 detik
+    setTimeout(() => setMessage(""), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
@@ -22,14 +41,22 @@ export default function HomePage() {
       {/* Quick Pick */}
       <section className="px-6 py-6">
         <h2 className="text-lg font-semibold mb-4">Quick Pick</h2>
-        <div className="flex gap-4 overflow-x-auto">
-          {[1, 2, 3, 4].map((item) => (
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {paket.map((item) => (
             <div
-              key={item}
+              key={item.id}
               className="w-32 flex-shrink-0 border rounded-lg p-2 flex flex-col items-center justify-center bg-white shadow-sm"
             >
               <div className="w-10 h-10 bg-gray-300 rounded mb-2"></div>
-              <span className="text-sm font-medium">100 RBx</span>
+              <span className="text-sm font-medium text-center">{item.nama_produk}</span>
+              <span className="text-xs text-gray-500">{item.jumlah_robux} RBx</span>
+              <span className="text-xs font-semibold text-blue-600">Rp {item.harga.toLocaleString('id-ID')}</span>
+              <button
+                onClick={() => handleBuyPaket(item.id)}
+                className="mt-2 text-xs text-white bg-blue-600 px-2 py-1 rounded hover:bg-blue-700"
+              >
+                Beli
+              </button>
             </div>
           ))}
         </div>
@@ -42,6 +69,13 @@ export default function HomePage() {
           {/* Konten FAQ akan ditambahkan di sini */}
         </div>
       </section>
+
+      {/* Notifikasi Pembelian */}
+      {message && (
+        <div className="fixed bottom-20 right-4 bg-white border px-4 py-2 rounded shadow text-sm text-gray-800">
+          {message}
+        </div>
+      )}
 
       {/* Chat Button */}
       <button className="fixed bottom-4 right-4 bg-white border rounded-full px-4 py-2 shadow-md font-semibold">
