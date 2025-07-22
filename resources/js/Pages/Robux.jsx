@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from "axios";
 
 export default function RobuxPage() {
@@ -7,33 +7,31 @@ export default function RobuxPage() {
   const [pricePerUnit, setPricePerUnit] = useState(0);
   const [stock, setStock] = useState(0);
   const [message, setMessage] = useState("");
+  const [productId, setProductId] = useState(null);
 
-  // Ambil data stok dari backend
+
   useEffect(() => {
-  axios.get('/api/robux-stock')
-    .then(res => {
-      const stockValue = parseInt(res.data.stock);
-      const priceValue = parseFloat(res.data.price_per_unit);
+    axios.get('/api/robux-stock')
+      .then(res => {
+        const stockValue = parseInt(res.data.stock);
+        const priceValue = parseFloat(res.data.price_per_unit);
 
-      setStock(stockValue);
-      setPricePerUnit(priceValue);
-      setQuantity(Math.min(1, parseInt(res.data.stock))); // atau Math.min(stock, 1)
-    });
-}, []);
-
+        setStock(stockValue);
+        setPricePerUnit(priceValue);
+        setQuantity(1);
+        setProductId(res.data.product_id);
+      });
+  }, []);
 
   const totalPrice = quantity * pricePerUnit;
 
-  const handleBuy = () => {
-    axios.post('/api/robux-purchase', { jumlah: quantity })
-      .then(res => {
-        setMessage(res.data.message);
-        setStock(res.data.sisa_stock);
-        setQuantity(1); // reset
-      })
-      .catch(err => {
-        setMessage(err.response?.data?.message || 'Gagal membeli');
-      });
+  // Fungsi untuk validasi input manual
+  const handleManualInput = (e) => {
+    let value = parseInt(e.target.value);
+    if (isNaN(value)) value = 1;
+    if (value < 1) value = 1;
+    if (value > stock) value = stock;
+    setQuantity(value);
   };
 
   return (
@@ -54,7 +52,16 @@ export default function RobuxPage() {
 
         <div className="flex justify-between mb-6">
           <div className="bg-white rounded-md p-4 shadow text-center w-1/2 mr-2">
-            <span className="text-lg font-semibold">{quantity} Robux</span>
+            <span className="text-lg font-semibold">
+              <input
+                type="number"
+                value={quantity}
+                onChange={handleManualInput}
+                min={1}
+                max={stock}
+                className="w-full text-center border rounded px-1 py-1"
+              /> Robux
+            </span>
           </div>
           <div className="bg-white rounded-md p-4 shadow text-center w-1/2 ml-2">
             <span className="text-lg font-semibold">
@@ -68,18 +75,18 @@ export default function RobuxPage() {
             type="range"
             min={1}
             max={stock}
+            step={1}
             value={quantity}
             onChange={(e) => setQuantity(parseInt(e.target.value))}
+            className="w-full mb-6"
           />
         ) : (
-          <p>Stok habis</p>
+          <p className="text-center">Stok habis</p>
         )}
 
-
-
         <button
-          onClick={handleBuy}
-          disabled={stock === 0}
+          onClick={() => router.visit(`/payment/${productId}?jumlah=${quantity}`)}
+          disabled={!productId || stock === 0}
           className="w-full py-3 bg-blue-600 text-white font-bold rounded shadow hover:bg-blue-700 transition"
         >
           Beli

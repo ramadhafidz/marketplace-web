@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from '@inertiajs/react';
 import axios from "axios";
+import { router } from '@inertiajs/react';
+
 
 export default function HomePage({ paket = [] }) {
   const [message, setMessage] = useState("");
@@ -52,7 +54,7 @@ export default function HomePage({ paket = [] }) {
               <span className="text-xs text-gray-500">{item.jumlah_robux} RBx</span>
               <span className="text-xs font-semibold text-blue-600">Rp {item.harga.toLocaleString('id-ID')}</span>
               <button
-                onClick={() => handleBuyPaket(item.id)}
+                onClick={() => router.visit(`/payment/${item.id}`)}
                 className="mt-2 text-xs text-white bg-blue-600 px-2 py-1 rounded hover:bg-blue-700"
               >
                 Beli

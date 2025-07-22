@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status_payment', ['pending', 'paid', 'failed', 'expired']);
             $table->enum('status_order', ['pending', 'processing', 'done', 'cancelled']);
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
 
     }

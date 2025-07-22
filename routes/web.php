@@ -25,6 +25,11 @@ Route::get('/Robux', function () {
     return Inertia::render('Robux');
 });
 
+Route::get('/payment/{product_id}', function ($product_id) {
+    $product = \App\Models\Product::findOrFail($product_id);
+    return Inertia::render('Checkout', ['product' => $product]);
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
