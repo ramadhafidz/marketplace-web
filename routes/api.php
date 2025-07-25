@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RobuxController;
+use App\Http\Controllers\Api\RobloxProxyController;
 use App\Models\Product;
 
 Route::get('/robux-stock', [RobuxController::class, 'getStock']);

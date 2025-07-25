@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class RobuxController extends Controller
 {
@@ -123,10 +125,58 @@ class RobuxController extends Controller
             'harga_per_item' => $product->harga,
         ]);
 
+        // Configure Midtrans
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('APP_ENV') === 'production';
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        // Prepare transaction data for Midtrans
+        $transactionData = [
+            'transaction_details' => [
+                'order_id' => $order->id,
+                'gross_amount' => (int) $totalHarga,
+            ],
+            'customer_details' => [
+                'first_name' => $request->roblox_username,
+                'phone' => $request->customer_contact,
+            ],
+            'item_details' => [
+                [
+                    'id' => $product->id,
+                    'price' => (int) $product->harga,
+                    'quantity' => (int) $request->jumlah,
+                    'name' => $product->nama_produk ?? "Robux Package",
+                    'brand' => 'Marketplace',
+                    'category' => $product->tipe_produk,
+                ]
+            ],
+        ];
+
+        try {
+            // Get snap token from Midtrans
+            $snapToken = Snap::getSnapToken($transactionData);
+            
+            // Update order with snap token
+            $order->update(['snap_token' => $snapToken]);
+
+        } catch (\Exception $e) {
+            // If Midtrans fails, delete the order and return error
+            $order->delete();
+            return response()->json([
+                'message' => 'Gagal membuat payment token: ' . $e->getMessage()
+            ], 500);
+        }
+
         $productSatuan->stock -= $jumlahRobux;
         $productSatuan->save();
 
-        return response()->json(['message' => 'Pesanan berhasil dibuat!']);
+        return response()->json([
+            'message' => 'Pesanan berhasil dibuat!',
+            'order_id' => $order->id,
+            'snap_token' => $snapToken,
+            'total_harga' => $totalHarga
+        ]);
 
     }
 }
