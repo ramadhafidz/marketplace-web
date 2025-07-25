@@ -23,8 +23,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProductSeeder::class,
             AdminSeeder::class,
-            OrderSeeder::class,
-            OrderItemSeeder::class
+           /* OrderSeeder::class,
+            OrderItemSeeder::class*/
         ]);
+
+        \App\Models\Order::factory()->count(20)->paid()->create();
+        \App\Models\Order::factory()->count(10)->create();
     }
 }
