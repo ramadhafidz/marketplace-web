@@ -122,7 +122,6 @@ export default function HomePage({ paket = [] }) {
                   key={item.id}
                   item={item}
                   onBuy={() => router.visit(`/payment/${item.id}`)}
-                  onQuickBuy={() => handleBuyPaket(item.id)}
                   formatIDR={formatIDR}
                 />
               ))}
@@ -134,7 +133,6 @@ export default function HomePage({ paket = [] }) {
                   <PaketCard
                     item={item}
                     onBuy={() => router.visit(`/payment/${item.id}`)}
-                    onQuickBuy={() => handleBuyPaket(item.id)}
                     formatIDR={formatIDR}
                   />
                 </div>
@@ -170,7 +168,7 @@ export default function HomePage({ paket = [] }) {
 
       {/* Toast Notification */}
       {message && (
-        <div className="fixed bottom-6 right-6 bg-white border px-4 py-3 rounded shadow text-sm text-gray-800">
+        <div className="fixed bottom-6 left-6 bg-white border px-4 py-3 rounded shadow text-sm text-gray-800">
           {message}
         </div>
       )}
@@ -183,7 +181,7 @@ export default function HomePage({ paket = [] }) {
   );
 }
 
-function PaketCard({ item, onBuy, onQuickBuy, formatIDR }) {
+function PaketCard({ item, onBuy, formatIDR }) {
   return (
     <div className="h-full bg-white border rounded-lg shadow-sm p-4 flex flex-col">
       <div className="flex items-center justify-between">
@@ -210,13 +208,7 @@ function PaketCard({ item, onBuy, onQuickBuy, formatIDR }) {
           className="flex-1 text-xs text-white bg-blue-600 px-3 py-2 rounded hover:bg-blue-700 transition"
         >
           Beli
-        </button>
-        <button
-          onClick={onQuickBuy}
-          className="flex-1 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded hover:bg-blue-100 transition"
-        >
-          Quick Buy
-        </button>
+        </button>       
       </div>
     </div>
   );
